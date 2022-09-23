@@ -1,0 +1,30 @@
+.element {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #050505;
+  width: 300px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.elementsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.addElement {
+  border: 1px dotted #050505;
+  color: #0A0A0A;
+  cursor: pointer;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
