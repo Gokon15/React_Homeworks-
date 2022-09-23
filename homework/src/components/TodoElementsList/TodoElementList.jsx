@@ -12,10 +12,15 @@ export const TodoElementList = ({ data, onAddClick, onRemoveElement, onEditEleme
 
 
   const [filter, setFilter] = useState(data);
+  const [updateByFilter, setUpdateByFilter] = useState(false);
 
   useEffect(() => {
     setFilter(data)
   },[data]);
+
+  useEffect(() => {
+    setFilter(filter)
+  },[updateByFilter]);
 
   const handleOnChange =  (e) => {
     let value = e.target.value;
@@ -27,20 +32,28 @@ export const TodoElementList = ({ data, onAddClick, onRemoveElement, onEditEleme
     }
   }
 
-  const sortByCreationDate = () =>{
-    console.log(filter)
+  const sortByCreationDate = () => {
     const sortedData = filter.sort(
         (objA, objB) => Date.parse(objB.creation_date) - Date.parse(objA.creation_date),
     );
-    console.log(sortedData)
     setFilter(sortedData)
+    setUpdateByFilter(!updateByFilter);
   }
-
+  const sortByUpdateDate = () => {
+    const sortedData = filter.sort(
+        (objA, objB) => Date.parse(objB.update_date) - Date.parse(objA.update_date),
+    );
+    setFilter(sortedData)
+    setUpdateByFilter(!updateByFilter);
+  }
 
   return (
       <div className='elementList'>
-      <input type="text"  placeholder="Search Filter" onChange={handleOnChange}/>
-      <button onClick={sortByCreationDate}>Sort by update date</button>
+        <div>
+          <input type="text"  placeholder="Search by status" onChange={handleOnChange}/>
+          <button onClick={sortByCreationDate}>Sort by creation date</button>
+          <button onClick={sortByUpdateDate}>Sort by update date</button>
+        </div>
       {filter.map(element => <TodoElement element={element} key={element.id}
                                         onRemoveElement={onRemoveElement}
                                         onEditElement={onEditElement}
