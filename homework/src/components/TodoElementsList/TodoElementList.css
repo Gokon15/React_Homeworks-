@@ -3,3 +3,10 @@
   flex-direction: row;
   flex-wrap: wrap;
 }
+
+.filtration {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 500px 0 15px;
+  margin-bottom: 30px;
+}
