@@ -1,14 +1,30 @@
-import React, {useMemo, useCallback, useState} from 'react';
+import React, {useMemo, useCallback} from 'react';
 import PropTypes from 'prop-types';
+
+import { Typography, Button, CardContent, CardActions, Card, Box } from '@mui/material';
 
 import { getColorFromPriority } from '../../utils/elementsUtils';
 
 import './TodoElement.css';
 
+const styles = {
+  boxStyles: {
+    width: '300px',
+    height: '240px',
+    margin: '10px',
+  },
+  typographyExtraStyle: {
+    mb: 1.5
+  },
+  cardContent: {
+    height: '150px',
+  }
+}
+
 export const  TodoElement = ({  element, onEditElement = () => {}, onRemoveElement = () => {}, onDoneElement = () => {}, onProgressElement = () => {}   }) => {
 
   const additionalCardStyle = useMemo(() => {
-    return { backgroundColor: getColorFromPriority(element.priority) }
+    return [styles.boxStyles, { bgcolor: getColorFromPriority(element.priority) }]
   }, [element.priority])
 
   const onRemoveClick = useCallback(() => {
@@ -29,32 +45,23 @@ export const  TodoElement = ({  element, onEditElement = () => {}, onRemoveEleme
 
 
   return (
-    <div style={additionalCardStyle} className="element">
-      <div className="elementsContainer">
-        <div>
-          {element.description}
-        </div>
-        <div>
-          {element.when}
-        </div>
-        <div>
-          {element.status}
-        </div>
-        <div>
-          {element.creation_date}
-        </div>
-        <div>
-          {element.update_date}
-        </div>
-
-      </div>
-      <div className="buttonContainer">
-        <button onClick={onDoneClick}>DONE</button>
-        <button onClick={onProgressClick}>In progress</button>
-        <button onClick={onRemoveClick}>Remove</button>
-        <button onClick={onEditClick}>Edit</button>
-      </div>
-    </div>
+      <Box>
+        <Card sx={additionalCardStyle}>
+          <CardContent sx={styles.cardContent}>
+            <Typography variant="h5" component="div">{element.description}</Typography>
+            <Typography sx={styles.typographyExtraStyle} color="text.secondary">{element.when}</Typography>
+            <Typography sx={styles.typographyExtraStyle} color="text.secondary">{element.status}</Typography>
+            <Typography sx={styles.typographyExtraStyle} color="text.secondary">{element.creation_date}</Typography>
+            <Typography sx={styles.typographyExtraStyle} color="text.secondary">{element.update_date}</Typography>
+          </CardContent>
+          <CardActions>
+            <Button onClick={onDoneClick} variant="contained">DONE</Button>
+            <Button onClick={onProgressClick} variant="contained">Process</Button>
+            <Button onClick={onRemoveClick} variant="contained">Remove</Button>
+            <Button onClick={onEditClick} variant="contained">Edit</Button>
+          </CardActions>
+        </Card>
+      </Box>
   )
 }
 

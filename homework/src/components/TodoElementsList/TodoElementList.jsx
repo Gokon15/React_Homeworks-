@@ -1,77 +1,122 @@
-import React, {useState, useEffect} from 'react';
-import PropTypes from 'prop-types';
+import React, {useState, useEffect, useCallback} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 
-import { TodoElement } from '../TodoElement/TodoElement';
-import { TodoAddElement } from '../TodoElement/TodoAddElement';
+import { TextField , Button} from '@mui/material';
+
+import {TodoElement} from '../TodoElement/TodoElement';
+import {TodoAddElement} from '../TodoElement/TodoAddElement';
+
 import './TodoElementList.css'
+
 import {arraySearch} from "../../utils/search";
 
+import {selectTodoData} from "../../rdx/todoList/selector";
+
+import {
+    byCreationDate, byUpdateDate,
+    doneTodoItem,
+    progressTodoItem,
+    removeTodoItem,
+} from "../../rdx/todoList/actions";
+import {showFormModal} from '../../rdx/app/actions';
 
 
-export const TodoElementList = ({ data, onAddClick, onRemoveElement, onEditElement, onDoneElement, onProgressElement }) => {
-
-
-  const [filter, setFilter] = useState(data);
-  const [updateByFilter, setUpdateByFilter] = useState(false);
-
-  useEffect(() => {
-    setFilter(data)
-  },[data]);
-
-  useEffect(() => {
-    setFilter(filter)
-  },[updateByFilter]);
-
-  const handleOnChange =  (e) => {
-    let value = e.target.value;
-    if (value.length > 1) {
-      let search =  arraySearch(filter, value);
-      setFilter(search)
-    } else {
-      setFilter(data)
+export const TodoElementList = () => {
+    const dispatch = useDispatch();
+    const data = useSelector(selectTodoData);
+    const [filter, setFilter] = useState(data);
+    const [updateByFilter, setUpdateByFilter] = useState(false);
+    const handleOnChange = (e) => {
+        let value = e.target.value;
+        if (value.length > 1) {
+            let search = arraySearch(filter, value);
+            setFilter(search)
+        } else {
+            setFilter(data)
+        }
     }
-  }
 
-  const sortByCreationDate = () => {
-    const sortedData = filter.sort(
-        (objA, objB) => Date.parse(objB.creation_date) - Date.parse(objA.creation_date),
-    );
-    setFilter(sortedData)
-    setUpdateByFilter(!updateByFilter);
-  }
-  const sortByUpdateDate = () => {
-    const sortedData = filter.sort(
-        (objA, objB) => Date.parse(objB.update_date) - Date.parse(objA.update_date),
-    );
-    setFilter(sortedData)
-    setUpdateByFilter(!updateByFilter);
-  }
+    useEffect(() => {
+        setFilter(data)
+    }, [data]);
 
-  return (
-      <div className='elementList'>
-        <div>
-          <input type="text"  placeholder="Search by status" onChange={handleOnChange}/>
-          <button onClick={sortByCreationDate}>Sort by creation date</button>
-          <button onClick={sortByUpdateDate}>Sort by update date</button>
+
+    useEffect(() => {
+        setFilter(filter)
+    }, [filter]);
+
+    const onAddClicked = useCallback(
+        () => {
+            dispatch(showFormModal())
+        },
+        [dispatch],
+    );
+
+    const onRemoveElement = useCallback(
+        (id) => {
+            dispatch(removeTodoItem(id))
+        },
+        [dispatch],
+    );
+
+    const onEditElement = useCallback(
+        (id) => {
+            dispatch(showFormModal(id))
+        },
+        [dispatch],
+    );
+
+    const onDoneElement = useCallback(
+        (id) => {
+            dispatch(doneTodoItem(id))
+        },
+        [dispatch],
+    );
+
+    const onProgressElement = useCallback(
+        (id) => {
+            dispatch(progressTodoItem(id))
+        },
+        [dispatch],
+    );
+
+    const sortByCreationDate = useCallback(
+        () => {
+            dispatch(byCreationDate())
+            setUpdateByFilter(!updateByFilter);
+        },
+        [dispatch, updateByFilter],
+    );
+
+    const sortByUpdateDate = useCallback(
+        () => {
+            dispatch(byUpdateDate())
+            setUpdateByFilter(!updateByFilter);
+        },
+        [dispatch, updateByFilter],
+    );
+
+    return (
+        <div >
+            <div className={"filtration"}>
+                <TextField
+                    onChange={handleOnChange}
+                    id="filled-search"
+                    label="Search by status"
+                    type="search"
+                    variant="standard"
+                />
+                <Button onClick={sortByCreationDate} variant="contained">Sort by creation date </Button>
+                <Button onClick={sortByUpdateDate} variant="contained">Sort by update date</Button>
+            </div>
+            <div className='elementList'>
+            {filter.map(element => <TodoElement element={element} key={element.id}
+                                                onRemoveElement={onRemoveElement}
+                                                onEditElement={onEditElement}
+                                                onDoneElement={onDoneElement}
+                                                onProgressElement={onProgressElement}/>)}
+            <TodoAddElement onAddClick={onAddClicked}/>
+            </div>
         </div>
-      {filter.map(element => <TodoElement element={element} key={element.id}
-                                        onRemoveElement={onRemoveElement}
-                                        onEditElement={onEditElement}
-                                        onDoneElement = {onDoneElement}
-                                        onProgressElement = {onProgressElement} />)}
-      <TodoAddElement onAddClick={onAddClick} />
-    </div>
-  )
-}
-
-TodoElementList.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({
-    description: PropTypes.string,
-    when: PropTypes.string,
-    priority: PropTypes.number,
-    done: PropTypes.bool,
-  })),
-  onAddClick: PropTypes.func.isRequired,
-  onRemoveElement: PropTypes.func.isRequired,
-  onEditElement: PropTypes.func.isRequired,
+    )
 }
