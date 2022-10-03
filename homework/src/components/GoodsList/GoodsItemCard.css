@@ -1,0 +1,11 @@
+.elementRow {
+  background-color: lightgray;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.buttonGridItem {
+  display: flex;
+  justify-content: center;
+}
